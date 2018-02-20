@@ -3,32 +3,38 @@ import subprocess, argparse
 
 __author__  = "Jeff White [karttoon] @noottrak"
 __email__   = "karttoon@gmail.com"
-__version__ = "1.0.1"
-__date__    = "31MAY2017"
+__version__ = "1.0.3"
+__date__    = "20FEB2018"
 
 # Adjust paths as necessary for pcregrep
 
-def check_matches(pcre):
+def check_matches(pcre, matched):
 
-    match_check = ((subprocess.check_output(["/opt/local/bin/pcregrep '%s' %s" % (pcre, args.url)], shell=True)).strip()).split("\n")
+    try:
+        match_check = ((subprocess.check_output(["/usr/local/bin/pcregrep '%s' %s" % (pcre, args.url)], shell=True)).strip()).split("\n")
+    except:
+        match_check = []
 
     for url in match_check:
         if url not in matched[pcre]["m"]:
             matched[pcre]["m"].append(url)
 
-    return
+    return matched
 
-def check_nonmatches(pcre):
+def check_nonmatches(pcre, matched):
 
-    match_check = ((subprocess.check_output(["/opt/local/bin/pcregrep -v '%s' %s" % (pcre, args.url)], shell=True)).strip()).split("\n")
+    try:
+        match_check = ((subprocess.check_output(["/usr/local/bin/pcregrep -v '%s' %s" % (pcre, args.url)], shell=True)).strip()).split("\n")
+    except:
+        match_check = []
 
     for url in match_check:
         if url not in matched[pcre]["u"]:
             matched[pcre]["u"].append(url)
 
-    return
+    return matched
 
-def print_match(pcre, value, type):
+def print_match(pcre, value, type, matched):
 
     print "\n[-] %s [-]\n" % value
 
@@ -37,20 +43,19 @@ def print_match(pcre, value, type):
 
     return
 
-def print_unmatch():
+def print_unmatch(matched, url_list):
 
     print "\n[+] NO HITS [+]\n"
 
+    match = []
+
     for pcre in matched:
         for url in matched[pcre]["m"]:
-
-            try:
-                url_list.remove(url)
-            except:
-                pass
+            match.append(url)
 
     for url in url_list:
-        print url
+        if url not in match:
+            print url
 
     return
 
@@ -80,38 +85,34 @@ if __name__ == '__main__':
 
     for entry in pcre_list:
         if not entry.startswith("#"):
+            pcre = entry.split("\t")[0].strip()
+            matched[pcre] = {"m":[],"u":[]}
             try:
-                pcre = entry.split("\t")[0].strip()
-                matched[pcre] = {"m":[],"u":[]}
-                try:
-                    comment = entry.split("\t")[1].strip()
-                except:
-                    comment = "No comments"
-
-                check_matches(pcre)
-
-                match_count = len(matched[pcre]["m"])
-
-                if match_count >= 1:
-
-                    print "\n[+] FOUND [+]\nCount: %d/%d\nComment: %s\nPCRE: %s" % (match_count, url_count, comment, pcre)
-
-                    if args.show:
-
-                        print_match(pcre, "MATCH", "m")
-
-                    if args.reverse:
-
-                        check_nonmatches(pcre)
-
-                        print_match(pcre, "NON-MATCH", "u")
-
+                comment = entry.split("\t")[1].strip()
             except:
-                continue
+                comment = "No comments"
+
+            matched = check_matches(pcre, matched)
+
+            match_count = len(matched[pcre]["m"])
+
+            if match_count >= 1:
+
+                print "\n[+] FOUND [+]\n\nCount: %d/%d\nComment: %s\nPCRE: %s" % (match_count, url_count, comment, pcre)
+
+                if args.show:
+
+                    print_match(pcre, "MATCH", "m", matched)
+
+                if args.reverse:
+
+                    matched = check_nonmatches(pcre, matched)
+
+                    print_match(pcre, "NON-MATCH", "u", matched)
 
     if args.nonmatch:
 
-        print_unmatch()
+        print_unmatch(matched, url_list)
 
     print ""
 
