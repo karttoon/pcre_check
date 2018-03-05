@@ -1,7 +1,7 @@
 # pcre_check
 Used for the development and testing of PCRE's across suspected malicious URL's for identification.
 
-Blog post - [31MAY2017 - Writing PCRE's for applied passive network defense](http://ropgadget.com/posts/defensive_pcres.html)
+Blog post - [31MAY2017 - Writing PCRE's for applied passive network defense [Emotet]](http://ropgadget.com/posts/defensive_pcres.html)
 
 Below is the final list of Emotet download PCRE's created in the blog.
 
