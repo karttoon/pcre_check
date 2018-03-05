@@ -20,3 +20,5 @@ Below is the final list of Emotet download PCRE's created in the blog.
 ^http:\/\/([^\x2F]+\/)+(ORDER|Rech|CUST|Cust|gescanntes|Scan)(.)?(-Document|-Dokument)?-[0-9]{10,11}\/$	karttoon 31MAY2017 - Emotet download - [ ORDER.-5883789520 ]
 ^http:\/\/([^\x2F]+\/)+SCANNED\/[A-Z]{2,3}[0-9]{4}[A-Z]{6,9}\/$	karttoon 31MAY2017 - Emotet download [ SCANNED/RZ7498WEXEZB ]
 ```
+
+* NOTE: ALL UPDATED EMOTET PCRE/URLS WERE MOVED TO [Emotet](https://github.com/karttoon/iocs)
